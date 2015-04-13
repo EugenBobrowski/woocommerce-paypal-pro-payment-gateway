@@ -4,7 +4,7 @@ Donate link: https://wp-ecommerce.net/paypal-pro-payment-gateway-for-woocommerce
 Tags: paypal, paypal pro, woocommerce, payment gateway, card, credit card, ecommerce, gateway, PayPal payment, paypal pro, payments pro, PayPal Pro Credit Card, dodirectpayment, express checkout,
 Requires at least: 3.3
 Tested up to: 4.2
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -17,6 +17,8 @@ This extension adds on-site credit card checkout functionality on your WooCommer
 The credit card checkout experience offered by this addon is very smooth. The following video shows the credit card checkout experience.
 
 https://www.youtube.com/watch?v=PAZRba8Tp74
+
+Best of all, Your PayPal Pro account fee will be waived by PayPal when you use this extension.
 
 Configuring this addon is very easy. Simply go to the following WooCommerce settings area to enable the PayPal Pro gateway and enter your PayPal Pro API details:
 

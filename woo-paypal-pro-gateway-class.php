@@ -296,7 +296,8 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
                 'CVV2' => $_POST['billing_ccvnumber'],
                 'EXPDATE' => sprintf('%s%s', $_POST['billing_expdatemonth'], $_POST['billing_expdateyear']),
                 'STREET' => sprintf('%s, %s', $_POST['billing_address_1'], $_POST['billing_address_2']),
-                'CURRENCYCODE' => get_option('woocommerce_currency')
+                'CURRENCYCODE' => get_option('woocommerce_currency'),
+                'BUTTONSOURCE' => 'TipsandTricks_SP',
             );
         }
         return false;
