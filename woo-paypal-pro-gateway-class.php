@@ -73,9 +73,9 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
                 'default' => __('Credit Card Payment', 'woocommerce')
             ),
             'securitycodehint' => array(
-                'title' => __('Show Security Code Hint', 'woocommerce'),
+                'title' => __('Show CVV Hint', 'woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Enable this option if you want to show a hint for the verification number on the credit card checkout form', 'woocommerce'),
+                'label' => __('Enable this option if you want to show a hint for the CVV field on the credit card checkout form', 'woocommerce'),
                 'default' => 'no'
             ),            
             'paypalapiusername' => array(
