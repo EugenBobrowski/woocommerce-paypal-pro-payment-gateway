@@ -3,8 +3,8 @@ Contributors: wp.insider, wpecommerce
 Donate link: https://wp-ecommerce.net/paypal-pro-payment-gateway-for-woocommerce
 Tags: paypal, paypal pro, woocommerce, payment gateway, card, credit card, ecommerce, gateway, PayPal payment, paypal pro, payments pro, PayPal Pro Credit Card, dodirectpayment, express checkout,
 Requires at least: 3.3
-Tested up to: 4.2
-Stable tag: 1.4
+Tested up to: 4.3
+Stable tag: 1.5
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -51,6 +51,9 @@ Please visit the PayPal Pro Payment Gateway for WooCommerce plugin page to view 
 https://wp-ecommerce.net/paypal-pro-payment-gateway-for-woocommerce
 
 == Changelog ==
+
+= 1.5 =
+- Added a new option to show a hint for the credit card security code (verification number) on the checkout form.
 
 = 1.4 =
 - Some more code refactoring changes.

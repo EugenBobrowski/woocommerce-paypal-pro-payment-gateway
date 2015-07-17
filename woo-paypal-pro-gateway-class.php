@@ -11,6 +11,7 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
     protected $transactionId = null;
     protected $transactionErrorMessage = null;
     protected $usesandboxapi = true;
+    protected $securitycodehint = true;
     protected $apiusername = '';
     protected $apipassword = '';
     protected $apisigniture = '';
@@ -25,6 +26,7 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
 
         $this->description = '';
         $this->usesandboxapi = strcmp($this->settings['debug'], 'yes') == 0;
+        $this->securitycodehint = strcmp($this->settings['securitycodehint'], 'yes') == 0;
         $this->title = $this->settings['title'];
         $this->apiusername = $this->settings['paypalapiusername'];
         $this->apipassword = $this->settings['paypalapipassword'];
@@ -70,6 +72,12 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
                 'description' => __('The title for this checkout option.', 'woocommerce'),
                 'default' => __('Credit Card Payment', 'woocommerce')
             ),
+            'securitycodehint' => array(
+                'title' => __('Show Security Code Hint', 'woocommerce'),
+                'type' => 'checkbox',
+                'label' => __('Enable this option if you want to show a hint for the verification number on the credit card checkout form', 'woocommerce'),
+                'default' => 'no'
+            ),            
             'paypalapiusername' => array(
                 'title' => __('PayPal Pro API Username', 'woocommerce'),
                 'type' => 'text',
@@ -168,10 +176,16 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
         </p>
         <div class="clear"></div>
         <p class="form-row form-row-first validate-required">
-            <label>Card Verification Number <span class="required">*</span></label>
+            <label>Card Verification Number (CVV) <span class="required">*</span></label>
             <input class="input-text" type="text" size="4" maxlength="4" name="billing_ccvnumber" value="" />
         </p>
+        <?php if ($this->securitycodehint){ ?>
+        <div class="wcppro-security-code-hint-section">
+            <img src="<?php echo WC_PP_PRO_ADDON_URL.'/images/card-security-code-hint.png'?>" />
+        </div>        
+        <?php } ?>
         <div class="clear"></div>
+        
         <?php
     }
 
