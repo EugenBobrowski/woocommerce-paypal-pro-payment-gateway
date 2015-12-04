@@ -30,28 +30,28 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
         $this->title = $this->settings['title'];
         $this->apiusername = $this->settings['paypalapiusername'];
         $this->apipassword = $this->settings['paypalapipassword'];
-        $this->apisigniture = $this->settings['paypalapisigniture'];        
-        
-        add_filter('http_request_version', array(&$this, 'use_http_1_1'));                
+        $this->apisigniture = $this->settings['paypalapisigniture'];
+
+        add_filter('http_request_version', array(&$this, 'use_http_1_1'));
         add_action('admin_notices', array(&$this, 'handle_admin_notice_msg'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
-        
+
     }
 
     public function admin_options() {
         ?>
         <h3><?php _e('PayPal Pro', 'woocommerce'); ?></h3>
         <p><?php _e('Allows Credit Card Payments via the PayPal Pro gateway.', 'woocommerce'); ?></p>
-        
+
         <table class="form-table">
-            <?php 
+            <?php
             //Render the settings form according to what is specified in the init_form_fields() function
-            $this->generate_settings_html(); 
+            $this->generate_settings_html();
             ?>
         </table>
         <?php
     }
-    
+
     public function init_form_fields() {
         $this->form_fields = array(
             'enabled' => array(
@@ -77,7 +77,7 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Enable this option if you want to show a hint for the CVV field on the credit card checkout form', 'woocommerce'),
                 'default' => 'no'
-            ),            
+            ),
             'paypalapiusername' => array(
                 'title' => __('PayPal Pro API Username', 'woocommerce'),
                 'type' => 'text',
@@ -104,7 +104,7 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
             echo '<div class="error"><p>' . sprintf(__('%s gateway requires SSL certificate for better security. The <a href="%s">force SSL option</a> is disabled on your site. Please ensure your server has a valid SSL certificate so you can enable the SSL option on your checkout page.', 'woocommerce'), $this->GATEWAYNAME, admin_url('admin.php?page=woocommerce_settings&tab=general')) . '</p></div>';
         }
     }
-    
+
 
     /*
      * Validates the fields specified in the payment_fields() function.
@@ -125,67 +125,115 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
             wc_add_notice(__('Card verification number (CVV) is not valid. You can find this number on your credit card.', 'woocommerce'), 'error');
         }
     }
-    
+
     /*
      * Render the credit card fields on the checkout page
      */
     public function payment_fields() {
+        $fields = array(
+            'billing_credircard' => array(
+                'type'              => 'text',
+                'label'             => 'Card Number',
+                'maxlength'         => 19,
+                'required'          => true,
+                'class'             => array(),
+                'label_class'       => array(),
+                'input_class'       => array(),
+                'return'            => false,
+                'options'           => array(),
+                'validate'          => array(),
+            ),
+            'billing_cardtype' => array(
+                'type'              => 'select',
+                'label'             => 'Card Type',
+                'required'          => true,
+                'class'             => array(),
+                'label_class'       => array(),
+                'input_class'       => array(),
+                'return'            => false,
+                'options'           => array(
+                    'Visa' => 'Visa',
+                    'MasterCard' => 'MasterCard',
+                    'Discover' => 'Discover',
+                    'Amex' => 'American Express',
+                ),
+                'validate'          => array(),
+            ),
+            'billing_expdatemonth' => array(
+                'type'              => 'select',
+                'label'             => 'Expiration Month',
+                'class'             => array(),
+                'required'          => true,
+                'label_class'       => array(),
+                'return'            => false,
+                'options'           => array(
+                    1=>'01',
+                    2=>'02',
+                    3=>'03',
+                    4=>'04',
+                    5=>'05',
+                    6=>'06',
+                    7=>'07',
+                    8=>'08',
+                    9=>'09',
+                    10=>'10',
+                    11=>'11',
+                    12=>'12',
+                    ),
+                'validate'          => array(),
+            ),
+            'billing_expdateyear' => array(
+                'type'              => 'select',
+                'label'             => 'Expiration Year',
+                'class'             => array(),
+                'required'          => true,
+                'label_class'       => array(),
+                'return'            => false,
+                'options'           => array(),
+                'validate'          => array(),
+            ),
+            'billing_ccvnumber' => array(
+                'type'              => 'text',
+                'label'             => 'Card Verification Number (CVV)',
+                'maxlength'         => 4,
+                'class'             => array(),
+                'required'          => true,
+                'label_class'       => array(),
+                'input_class'       => array(),
+                'return'            => false,
+                'options'           => array(),
+                'validate'          => array(),
+            ),
+
+        );
+
+        $today = (int)date('Y', time());
+        for($i = 0; $i < 8; $i++)
+        {
+            $fields['billing_expdateyear']['options'][''.$today] = $today;
+            $today++;
+        }
+
+
         ?>
-        <p class="form-row validate-required">
-            <label>Card Number <span class="required">*</span></label>
-            <input class="input-text" type="text" size="19" maxlength="19" name="billing_credircard" />
-        </p>         
-        <p class="form-row form-row-first">
-            <label>Card Type <span class="required">*</span></label>
-            <select name="billing_cardtype" >
-                <option value="Visa" selected="selected">Visa</option>
-                <option value="MasterCard">MasterCard</option>
-                <option value="Discover">Discover</option>
-                <option value="Amex">American Express</option>
-            </select>
-        </p>       
-        <div class="clear"></div>
-        <p class="form-row form-row-first">
-            <label>Expiration Date <span class="required">*</span></label>
-            <select name="billing_expdatemonth">
-                <option value=1>01</option>
-                <option value=2>02</option>
-                <option value=3>03</option>
-                <option value=4>04</option>
-                <option value=5>05</option>
-                <option value=6>06</option>
-                <option value=7>07</option>
-                <option value=8>08</option>
-                <option value=9>09</option>
-                <option value=10>10</option>
-                <option value=11>11</option>
-                <option value=12>12</option>
-            </select>
-            <select name="billing_expdateyear">
-            <?php
-            $today = (int)date('Y', time());
-            for($i = 0; $i < 8; $i++)
-            {
-            ?>
-                <option value="<?php echo $today; ?>"><?php echo $today; ?></option>
-            <?php
-                $today++;
-            }
-            ?>
-            </select>            
-        </p>
-        <div class="clear"></div>
-        <p class="form-row form-row-first validate-required">
-            <label>Card Verification Number (CVV) <span class="required">*</span></label>
-            <input class="input-text" type="text" size="4" maxlength="4" name="billing_ccvnumber" value="" />
-        </p>
+
+        <div class="<?php echo apply_filters('woo_paypal_pro_container_class', 'woo_paypal_pro_container')?>">
+            <?php foreach ( $fields as $key => $field ) : ?>
+
+                <?php woocommerce_form_field( $key, $field, null ); ?>
+
+            <?php endforeach; ?>
+        </div>
+
+
+
         <?php if ($this->securitycodehint){ ?>
-        <div class="wcppro-security-code-hint-section">
-            <img src="<?php echo WC_PP_PRO_ADDON_URL.'/images/card-security-code-hint.png'?>" />
-        </div>        
+            <div class="wcppro-security-code-hint-section">
+                <img src="<?php echo WC_PP_PRO_ADDON_URL.'/images/card-security-code-hint.png'?>" />
+            </div>
         <?php } ?>
         <div class="clear"></div>
-        
+
         <?php
     }
 
@@ -229,7 +277,7 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
         $woocommerce->cart->empty_cart();
 
         $this->order->add_order_note(
-                sprintf("Paypal Credit Card payment completed with Transaction Id of '%s'", $this->transactionId)
+            sprintf("Paypal Credit Card payment completed with Transaction Id of '%s'", $this->transactionId)
         );
 
         unset($_SESSION['order_awaiting_payment']);
@@ -316,5 +364,5 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
         }
         return false;
     }
-    
+
 }//End of class
