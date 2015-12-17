@@ -30,28 +30,28 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
         $this->title = $this->settings['title'];
         $this->apiusername = $this->settings['paypalapiusername'];
         $this->apipassword = $this->settings['paypalapipassword'];
-        $this->apisigniture = $this->settings['paypalapisigniture'];
-
-        add_filter('http_request_version', array(&$this, 'use_http_1_1'));
+        $this->apisigniture = $this->settings['paypalapisigniture'];        
+        
+        add_filter('http_request_version', array(&$this, 'use_http_1_1'));                
         add_action('admin_notices', array(&$this, 'handle_admin_notice_msg'));
         add_action('woocommerce_update_options_payment_gateways_' . $this->id, array(&$this, 'process_admin_options'));
-
+        
     }
 
     public function admin_options() {
         ?>
         <h3><?php _e('PayPal Pro', 'woocommerce'); ?></h3>
         <p><?php _e('Allows Credit Card Payments via the PayPal Pro gateway.', 'woocommerce'); ?></p>
-
+        
         <table class="form-table">
-            <?php
+            <?php 
             //Render the settings form according to what is specified in the init_form_fields() function
-            $this->generate_settings_html();
+            $this->generate_settings_html(); 
             ?>
         </table>
         <?php
     }
-
+    
     public function init_form_fields() {
         $this->form_fields = array(
             'enabled' => array(
@@ -77,7 +77,7 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Enable this option if you want to show a hint for the CVV field on the credit card checkout form', 'woocommerce'),
                 'default' => 'no'
-            ),
+            ),            
             'paypalapiusername' => array(
                 'title' => __('PayPal Pro API Username', 'woocommerce'),
                 'type' => 'text',
@@ -104,7 +104,7 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
             echo '<div class="error"><p>' . sprintf(__('%s gateway requires SSL certificate for better security. The <a href="%s">force SSL option</a> is disabled on your site. Please ensure your server has a valid SSL certificate so you can enable the SSL option on your checkout page.', 'woocommerce'), $this->GATEWAYNAME, admin_url('admin.php?page=woocommerce_settings&tab=general')) . '</p></div>';
         }
     }
-
+    
 
     /*
      * Validates the fields specified in the payment_fields() function.
@@ -125,13 +125,15 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
             wc_add_notice(__('Card verification number (CVV) is not valid. You can find this number on your credit card.', 'woocommerce'), 'error');
         }
     }
-
+    
     /*
      * Render the credit card fields on the checkout page
      */
     public function payment_fields() {
+        $billing_credircard = isset($_REQUEST['billing_credircard'])? esc_attr($_REQUEST['billing_credircard']) : '';
         $fields = array(
             'billing_credircard' => array(
+                'value'             => $billing_credircard,
                 'type'              => 'text',
                 'label'             => 'Card Number',
                 'maxlength'         => 19,
@@ -227,13 +229,16 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
 
 
 
-        <?php if ($this->securitycodehint){ ?>
-            <div class="wcppro-security-code-hint-section">
-                <img src="<?php echo WC_PP_PRO_ADDON_URL.'/images/card-security-code-hint.png'?>" />
-            </div>
-        <?php } ?>
+        <?php if ($this->securitycodehint){
+            $cvv_hint_img = WC_PP_PRO_ADDON_URL.'/images/card-security-code-hint.png';
+            $cvv_hint_img = apply_filters('wcpprog-cvv-image-hint-src', $cvv_hint_img);
+            echo '<div class="wcppro-security-code-hint-section">';
+            echo '<img src="'.$cvv_hint_img.'" />';
+            echo '</div>';
+        }
+        ?>
         <div class="clear"></div>
-
+        
         <?php
     }
 
@@ -277,7 +282,7 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
         $woocommerce->cart->empty_cart();
 
         $this->order->add_order_note(
-            sprintf("Paypal Credit Card payment completed with Transaction Id of '%s'", $this->transactionId)
+                sprintf("Paypal Credit Card payment completed with Transaction Id of '%s'", $this->transactionId)
         );
 
         unset($_SESSION['order_awaiting_payment']);
@@ -364,5 +369,5 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
         }
         return false;
     }
-
+    
 }//End of class
