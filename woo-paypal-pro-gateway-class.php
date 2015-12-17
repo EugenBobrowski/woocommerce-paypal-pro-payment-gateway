@@ -77,7 +77,7 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
                 'type' => 'checkbox',
                 'label' => __('Enable this option if you want to show a hint for the CVV field on the credit card checkout form', 'woocommerce'),
                 'default' => 'no'
-            ),            
+            ),
             'paypalapiusername' => array(
                 'title' => __('PayPal Pro API Username', 'woocommerce'),
                 'type' => 'text',
@@ -130,10 +130,11 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
      * Render the credit card fields on the checkout page
      */
     public function payment_fields() {
+        $billing_credircard = isset($_REQUEST['billing_credircard'])? esc_attr($_REQUEST['billing_credircard']) : '';
         ?>
         <p class="form-row validate-required">
             <label>Card Number <span class="required">*</span></label>
-            <input class="input-text" type="text" size="19" maxlength="19" name="billing_credircard" />
+            <input class="input-text" type="text" size="19" maxlength="19" name="billing_credircard" value="<?php echo $billing_credircard; ?>" />
         </p>         
         <p class="form-row form-row-first">
             <label>Card Type <span class="required">*</span></label>
@@ -179,11 +180,14 @@ class WC_PP_PRO_Gateway extends WC_Payment_Gateway {
             <label>Card Verification Number (CVV) <span class="required">*</span></label>
             <input class="input-text" type="text" size="4" maxlength="4" name="billing_ccvnumber" value="" />
         </p>
-        <?php if ($this->securitycodehint){ ?>
-        <div class="wcppro-security-code-hint-section">
-            <img src="<?php echo WC_PP_PRO_ADDON_URL.'/images/card-security-code-hint.png'?>" />
-        </div>        
-        <?php } ?>
+        <?php if ($this->securitycodehint){ 
+        $cvv_hint_img = WC_PP_PRO_ADDON_URL.'/images/card-security-code-hint.png';
+        $cvv_hint_img = apply_filters('wcpprog-cvv-image-hint-src', $cvv_hint_img);
+        echo '<div class="wcppro-security-code-hint-section">';
+        echo '<img src="'.$cvv_hint_img.'" />';
+        echo '</div>';
+        } 
+        ?>
         <div class="clear"></div>
         
         <?php
